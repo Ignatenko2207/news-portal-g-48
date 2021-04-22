@@ -24,6 +24,12 @@
             <artifactId>lombok</artifactId>
         </dependency>
 
+        <!--SPRING-WEB-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
         <!--SPRING-DATA-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -13,4 +13,3 @@ spring:
       connectionTimeout: 20000
       maximumPoolSize: 5000
       driver-class-name: "org.h2.Driver"
-
