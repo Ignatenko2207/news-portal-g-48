@@ -15,4 +15,5 @@ public class NewsapiClientConfig {
         factory.setReadTimeout(30_000);
         return new RestTemplate(factory);
     }
+
 }

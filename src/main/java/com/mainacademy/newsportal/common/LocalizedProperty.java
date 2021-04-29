@@ -11,16 +11,14 @@ import java.util.Locale;
 @Builder
 public class LocalizedProperty {
 
-    private String ua;
     private String ru;
     private String en;
 
     public String getByLocale(Locale locale) {
         switch (locale.getLanguage()) {
             case "en": return en;
-            case "ru": return ru;
-            case "ua":
-            default: return ua;
+            case "ru":
+            default: return ru;
         }
     }
 

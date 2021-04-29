@@ -1,33 +1,40 @@
 package com.mainacademy.newsportal.model;
 
 import com.mainacademy.newsportal.common.Language;
-import com.mainacademy.newsportal.common.LocalizedProperty;
 import com.mainacademy.newsportal.common.NewsCategory;
-import com.mainacademy.newsportal.common.NewsContentType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "content")
+@Entity
 public class NewsContent {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private NewsResource resourceName;
+    @ManyToOne(targetEntity = NewsResource.class)
+    private NewsResource resource;
     private String author;
     private String title;
     private String description;
+    @Column(name = "news_url")
     private String newsUrl;
+    @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "published_time")
     private LocalDateTime publishedTime;
     private Language language;
     private String content;
-    private NewsCategory newsCategory;
+    private NewsCategory category;
 
 }

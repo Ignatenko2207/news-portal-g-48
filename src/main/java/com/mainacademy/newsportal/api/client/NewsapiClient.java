@@ -1,12 +1,21 @@
 package com.mainacademy.newsportal.api.client;
 
+import com.mainacademy.newsportal.api.client.dto.NewsResponseDTO;
 import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component
 public class NewsapiClient {
@@ -17,20 +26,77 @@ public class NewsapiClient {
 
     public NewsapiClient(
             @Value("${client.newsapi.properties.api-key:40f23b5268a54562ad05a0e112b4e433}")
-            String apiKey,
+                    String apiKey,
             @Value("${client.newsapi.properties.base-url:https://newsapi.org}")
-            String baseUrl,
+                    String baseUrl,
             RestTemplate newsapiRestTemplate) {
         this.apiKey = apiKey;
         this.baseUrl = baseUrl;
         this.newsapiRestTemplate = newsapiRestTemplate;
     }
 
-    public ResourcesResponseDTO getAcceptableResourses() {
-        String resourcesUrl = "/v2/sources";
+    public ResourcesResponseDTO getAcceptableResourses(String language) {
+        UriBuilder uriBuilder= getUriBuilder("/v2/sources");
+        if (StringUtils.isBlank(language)) {
+            uriBuilder.queryParam("apiKey", apiKey, "language", language);
+        } else {
+            uriBuilder.queryParam("apiKey", apiKey);
+        }
+        ResourcesResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), ResourcesResponseDTO.class).getBody();
+        if (nonNull(result) && result.getStatus().equals("ok")) {
+            List<ResourcesResponseDTO.Resource> resources = result.getSources()
+                    .stream()
+                    .filter(it -> nonNull(it.getId()))
+                    .collect(Collectors.toList());
+            result.setSources(resources);
+            return result;
+        }
+        throw new RuntimeException("Sources were not extracted!");
+    }
+
+    public NewsResponseDTO getTopNews(String country) {
+        UriBuilder uriBuilder= getUriBuilder("/v2/top-headlines");
+        if (StringUtils.isBlank(country)) {
+            uriBuilder.queryParam("apiKey", apiKey, "country", country);
+        } else {
+            uriBuilder.queryParam("apiKey", apiKey);
+        }
+        NewsResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), NewsResponseDTO.class).getBody();
+        if (nonNull(result) && result.getStatus().equals("ok")) {
+            List<NewsResponseDTO.Article> articles =
+                    result.getArticles()
+                    .stream()
+                    .filter(it -> nonNull(it.getSource().getId()))
+                    .collect(Collectors.toList());
+            result.setArticles(articles);
+            return result;
+        }
+        throw new RuntimeException("Sources were not extracted!");
+    }
+
+    public NewsResponseDTO getOtherNews(String language) {
+        UriBuilder uriBuilder= getUriBuilder("/v2/everything");
+        if (StringUtils.isBlank(language)) {
+            uriBuilder.queryParam("apiKey", apiKey, "language", language);
+        } else {
+            uriBuilder.queryParam("apiKey", apiKey);
+        }
+        NewsResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), NewsResponseDTO.class).getBody();
+        if (nonNull(result) && result.getStatus().equals("ok")) {
+            List<NewsResponseDTO.Article> articles =
+                    result.getArticles()
+                            .stream()
+                            .filter(it -> nonNull(it.getSource().getId()))
+                            .collect(Collectors.toList());
+            result.setArticles(articles);
+            return result;
+        }
+        throw new RuntimeException("Sources were not extracted!");
+    }
+
+    private UriBuilder getUriBuilder(String url) {
         DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(baseUrl);
-        URI uri = factory.builder().path(resourcesUrl).queryParam("apiKey", apiKey).build();
-        return newsapiRestTemplate.getForEntity(uri, ResourcesResponseDTO.class).getBody();
+        return factory.builder().path(url);
     }
 
 }
