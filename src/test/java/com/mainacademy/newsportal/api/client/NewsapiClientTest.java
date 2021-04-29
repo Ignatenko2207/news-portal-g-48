@@ -12,19 +12,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class NewsapiClientTest {
 
     @Autowired
     NewsapiClient newsapiClient;
 
-//    @Test
+    @Test
     void getAcceptableResourses() {
-//        ResourcesResponseDTO result = newsapiClient.getAcceptableResourses();
-//        Set<String> categories = result.getSources()
-//        .stream()
-//        .map(ResourcesResponseDTO.Resource::getCategory)
-//        .collect(Collectors.toSet());
-//
-//        categories.forEach(System.out::println);
+        ResourcesResponseDTO result = newsapiClient.getAcceptableResourses("ru");
+        Set<String> categories = result.getSources()
+        .stream()
+        .map(ResourcesResponseDTO.Resource::getCategory)
+        .collect(Collectors.toSet());
+
+        categories.forEach(System.out::println);
     }
 }

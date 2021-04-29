@@ -70,4 +70,5 @@ public class NewsContentServiceImpl implements NewsContentService {
     public void deleteContentBefore(LocalDateTime time) {
         newsContentRepository.deleteAllByPublishedTimeBefore(time);
     }
+
 }
