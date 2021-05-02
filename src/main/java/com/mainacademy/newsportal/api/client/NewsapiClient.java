@@ -5,16 +5,13 @@ import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Component
@@ -35,13 +32,12 @@ public class NewsapiClient {
         this.newsapiRestTemplate = newsapiRestTemplate;
     }
 
-    public ResourcesResponseDTO getAcceptableResourses(String language) {
-        UriBuilder uriBuilder= getUriBuilder("/v2/sources");
-        if (StringUtils.isBlank(language)) {
-            uriBuilder.queryParam("apiKey", apiKey, "language", language);
-        } else {
-            uriBuilder.queryParam("apiKey", apiKey);
+    public ResourcesResponseDTO getAcceptableResources(String language) {
+        UriBuilder uriBuilder = getUriBuilder("/v2/sources");
+        if (!StringUtils.isBlank(language)) {
+            uriBuilder.queryParam("language", language);
         }
+        uriBuilder.queryParam("apiKey", apiKey);
         ResourcesResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), ResourcesResponseDTO.class).getBody();
         if (nonNull(result) && result.getStatus().equals("ok")) {
             List<ResourcesResponseDTO.Resource> resources = result.getSources()
@@ -55,16 +51,14 @@ public class NewsapiClient {
     }
 
     public NewsResponseDTO getTopNews(String country) {
-        UriBuilder uriBuilder= getUriBuilder("/v2/top-headlines");
-        if (StringUtils.isBlank(country)) {
-            uriBuilder.queryParam("apiKey", apiKey, "country", country);
-        } else {
-            uriBuilder.queryParam("apiKey", apiKey);
+        UriBuilder uriBuilder = getUriBuilder("/v2/top-headlines");
+        if (!StringUtils.isBlank(country)) {
+            uriBuilder.queryParam("country", country);
         }
+        uriBuilder.queryParam("apiKey", apiKey);
         NewsResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), NewsResponseDTO.class).getBody();
         if (nonNull(result) && result.getStatus().equals("ok")) {
-            List<NewsResponseDTO.Article> articles =
-                    result.getArticles()
+            List<NewsResponseDTO.Article> articles = result.getArticles()
                     .stream()
                     .filter(it -> nonNull(it.getSource().getId()))
                     .collect(Collectors.toList());
@@ -75,12 +69,11 @@ public class NewsapiClient {
     }
 
     public NewsResponseDTO getOtherNews(String language) {
-        UriBuilder uriBuilder= getUriBuilder("/v2/everything");
-        if (StringUtils.isBlank(language)) {
-            uriBuilder.queryParam("apiKey", apiKey, "language", language);
-        } else {
-            uriBuilder.queryParam("apiKey", apiKey);
+        UriBuilder uriBuilder = getUriBuilder("/v2/everything");
+        if (!StringUtils.isBlank(language)) {
+            uriBuilder.queryParam("language", language);
         }
+        uriBuilder.queryParam("apiKey", apiKey);
         NewsResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), NewsResponseDTO.class).getBody();
         if (nonNull(result) && result.getStatus().equals("ok")) {
             List<NewsResponseDTO.Article> articles =

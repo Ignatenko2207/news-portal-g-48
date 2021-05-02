@@ -10,7 +10,7 @@ spring:
   datasource:
     url: "jdbc:postgresql://localhost:5432/news-portal-g-48"
     username: "postgres"
-    password: "248842"
+    password: "1823"
     hikari:
       connectionTimeout: 20000
       maximumPoolSize: 5000

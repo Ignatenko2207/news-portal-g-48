@@ -40,8 +40,8 @@ public class DataExtractionServiceImpl implements DataExtractionService {
 
     @Override
     public List<NewsResource> extractResources() {
-        List<ResourcesResponseDTO.Resource> resources = newsapiClient.getAcceptableResourses("en").getSources();
-        resources.addAll(newsapiClient.getAcceptableResourses("ru").getSources());
+        List<ResourcesResponseDTO.Resource> resources = newsapiClient.getAcceptableResources("en").getSources();
+        resources.addAll(newsapiClient.getAcceptableResources("ru").getSources());
         return resources.stream()
                 .map(resourceMapper::toModel)
                 .collect(Collectors.toList());
