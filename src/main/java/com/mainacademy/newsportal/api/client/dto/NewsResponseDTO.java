@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -40,9 +41,9 @@ public class NewsResponseDTO {
         private String urlToImage;
         private String content;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        @JsonDeserialize(using = LocalDateDeserializer.class)
-        @JsonSerialize(using = LocalDateSerializer.class)
+//        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+//        @JsonDeserialize(using = LocalDateDeserializer.class)
+//        @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDateTime publishedAt;
 
     }

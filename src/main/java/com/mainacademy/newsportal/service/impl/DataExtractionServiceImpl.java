@@ -4,6 +4,7 @@ import com.mainacademy.newsportal.api.client.NewsapiClient;
 import com.mainacademy.newsportal.api.client.dto.NewsResponseDTO;
 import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
 import com.mainacademy.newsportal.api.client.mapper.ResourceMapper;
+import com.mainacademy.newsportal.common.Language;
 import com.mainacademy.newsportal.common.NewsCategory;
 import com.mainacademy.newsportal.model.NewsContent;
 import com.mainacademy.newsportal.model.NewsResource;
@@ -25,17 +26,16 @@ public class DataExtractionServiceImpl implements DataExtractionService {
     private final ResourceMapper resourceMapper;
 
     @Override
-    public List<NewsContent> extractNews() {
-        // extract top news
-        List<NewsResponseDTO.Article> topArticles = newsapiClient.getTopNews("gb").getArticles();
-        topArticles.addAll(newsapiClient.getTopNews("us").getArticles());
-        topArticles.addAll(newsapiClient.getTopNews("au").getArticles());
-        topArticles.addAll(newsapiClient.getOtherNews("ru").getArticles());
-        // extract news
-        List<NewsResponseDTO.Article> articles = newsapiClient.getOtherNews("en").getArticles();
-        articles.addAll(newsapiClient.getTopNews("ru").getArticles());
+    public List<NewsContent> extractTopNews() {
+        List<NewsResponseDTO.Article> topArticles = newsapiClient.getTopNews("en").getArticles();
+        topArticles.addAll(newsapiClient.getTopNews("ru").getArticles());
+        return convertNewsToModel(topArticles);
+    }
 
-        return convertToNewsModel(topArticles, articles);
+    @Override
+    public List<NewsContent> extractOtherNews(ResourcesResponseDTO.Resource resource) {
+        List<NewsResponseDTO.Article> otherArticles = newsapiClient.getOtherNews(resource).getArticles();
+        return convertNewsToModel(otherArticles);
     }
 
     @Override
@@ -47,50 +47,30 @@ public class DataExtractionServiceImpl implements DataExtractionService {
                 .collect(Collectors.toList());
     }
 
-    private List<NewsContent> convertToNewsModel(List<NewsResponseDTO.Article> topArticles, List<NewsResponseDTO.Article> articles) {
+    private List<NewsContent> convertNewsToModel(List<NewsResponseDTO.Article> articles) {
         Map<String, NewsResource> resourcesMap = extractResources()
                 .stream()
                 .collect(Collectors.toMap(NewsResource::getApiId, it -> it));
 
-        List<NewsContent> result = topArticles
+        List<NewsContent> result = articles
                 .stream()
                 .map(article -> {
                     NewsResource resource = resourcesMap.get(article.getSource().getId());
                     return NewsContent.builder()
-                            .resource(resource)
+                            .resource(resource) //TODO: fix error
                             .author(article.getAuthor())
                             .title(article.getTitle())
                             .description(article.getDescription())
                             .newsUrl(article.getUrl())
                             .imageUrl(article.getUrlToImage())
                             .publishedTime(article.getPublishedAt())
-                            .language(resource.getLanguage())
+//                            .language(resource.getLanguage()) //TODO: fix error
+                            .language(Language.EN)
                             .content(article.getContent())
-                            .category(NewsCategory.TOP)
+                            .category(NewsCategory.TOP) // check
                             .build();
                 })
                 .collect(Collectors.toList());
-        result.addAll(
-                articles
-                        .stream()
-                        .map(article -> {
-                            NewsResource resource = resourcesMap.get(article.getSource().getId());
-                            return NewsContent.builder()
-                                    .resource(resource)
-                                    .author(article.getAuthor())
-                                    .title(article.getTitle())
-                                    .description(article.getDescription())
-                                    .newsUrl(article.getUrl())
-                                    .imageUrl(article.getUrlToImage())
-                                    .publishedTime(article.getPublishedAt())
-                                    .language(resource.getLanguage())
-                                    .content(article.getContent())
-                                    .category(resource.getCategory())
-                                    .build();
-                        })
-                        .collect(Collectors.toList())
-        );
         return result;
     }
-
 }

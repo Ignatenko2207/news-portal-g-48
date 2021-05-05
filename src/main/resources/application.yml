@@ -19,6 +19,6 @@ spring:
 client:
   newsapi:
     properties:
-      api-key: "40f23b5268a54562ad05a0e112b4e433"
+      api-key: "f1c821175ea64a5c82b4f17151925c25"
       base-url: "https://newsapi.org"
 

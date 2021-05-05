@@ -42,7 +42,9 @@ public class NewsContentServiceImpl implements NewsContentService {
                 stream()
                 .map(NewsContent::getNewsUrl)
                 .collect(Collectors.toList())
-                .contains(content.getNewsUrl())) {
+                .contains(content.getNewsUrl())
+        )
+        {
             newsContentRepository.save(content);
         }
     }
