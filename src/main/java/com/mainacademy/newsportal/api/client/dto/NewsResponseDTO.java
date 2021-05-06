@@ -40,7 +40,6 @@ public class NewsResponseDTO {
         private String urlToImage;
         private String content;
 
-        @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         @JsonDeserialize(using = LocalDateDeserializer.class)
         @JsonSerialize(using = LocalDateSerializer.class)
         private LocalDateTime publishedAt;
