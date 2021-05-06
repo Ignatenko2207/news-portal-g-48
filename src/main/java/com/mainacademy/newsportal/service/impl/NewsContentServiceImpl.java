@@ -3,9 +3,11 @@ package com.mainacademy.newsportal.service.impl;
 import com.mainacademy.newsportal.common.NewsCategory;
 import com.mainacademy.newsportal.dao.NewsContentRepository;
 import com.mainacademy.newsportal.model.NewsContent;
-import com.mainacademy.newsportal.model.NewsResource;
 import com.mainacademy.newsportal.service.NewsContentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,7 +22,7 @@ public class NewsContentServiceImpl implements NewsContentService {
 
     @Override
     public void saveAll(List<NewsContent> contentList) {
-        List<NewsContent> savedContent = newsContentRepository.findAll();
+        List<NewsContent> savedContent = (List<NewsContent>) newsContentRepository.findAll();
         newsContentRepository.saveAll(
                 contentList
                         .stream()
@@ -37,7 +39,7 @@ public class NewsContentServiceImpl implements NewsContentService {
 
     @Override
     public void save(NewsContent content) {
-        List<NewsContent> savedContent = newsContentRepository.findAll();
+        List<NewsContent> savedContent = (List<NewsContent>) newsContentRepository.findAll();
         if (!savedContent.
                 stream()
                 .map(NewsContent::getNewsUrl)
@@ -48,22 +50,15 @@ public class NewsContentServiceImpl implements NewsContentService {
     }
 
     @Override
-    public List<NewsContent> findAll() {
-        return newsContentRepository.findAll();
+    public Page<NewsContent> findByCategory(String category, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return newsContentRepository.findAllByCategory(NewsCategory.ofName(category), pageable);
     }
 
     @Override
-    public List<NewsContent> findByCategory(String category) {
-        return newsContentRepository.findAllByCategory(NewsCategory.ofName(category));
-    }
-
-    @Override
-    public List<NewsContent> findByText(String fragment, boolean searchInTitle) {
-        List<NewsContent> result = newsContentRepository.findAllByContentContains(fragment);
-        if (searchInTitle) {
-            result.addAll(newsContentRepository.findAllByTitleContains(fragment));
-        }
-        return result;
+    public Page<NewsContent> findByText(String fragment, Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return newsContentRepository.findAllByContentContains(fragment, pageable);
     }
 
     @Override

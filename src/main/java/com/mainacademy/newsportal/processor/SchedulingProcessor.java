@@ -1,8 +1,8 @@
 package com.mainacademy.newsportal.processor;
 
-public interface ContentExtractionProcessor {
+public interface SchedulingProcessor {
 
     void extractAndSaveResources();
     void extractAndSaveNews();
-
+    void deleteOldNews();
 }
