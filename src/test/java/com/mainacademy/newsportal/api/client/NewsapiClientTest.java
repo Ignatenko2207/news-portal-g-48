@@ -2,12 +2,17 @@ package com.mainacademy.newsportal.api.client;
 
 import com.mainacademy.newsportal.api.client.dto.NewsResponseDTO;
 import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
+import com.mainacademy.newsportal.common.Language;
+import com.mainacademy.newsportal.common.NewsCategory;
+import com.mainacademy.newsportal.dao.NewsResourceRepository;
+import com.mainacademy.newsportal.model.NewsResource;
 import org.apache.el.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +24,8 @@ class NewsapiClientTest {
 
     @Autowired
     NewsapiClient newsapiClient;
+    @Autowired
+    NewsResourceRepository newsResourceRepository;
 
     @Test
     void getAcceptableResources() {
@@ -36,31 +43,19 @@ class NewsapiClientTest {
     @Test
     void getTopNews() {
         NewsResponseDTO resultRu = newsapiClient.getTopNews("ru");
+        NewsResponseDTO resultEn = newsapiClient.getTopNews("en");
 
-        System.out.println("The total number of results available for your request language RU: " + resultRu.getTotalResults());
-        System.out.println(resultRu.getArticles().get(0).getPublishedAt());
+        System.out.println("The total size of results available for your request language RU: " + resultRu.getArticles().size());
+        System.out.println("The total size of results available for your request language EN: " + resultEn.getArticles().size());
+        System.out.println(resultEn.getArticles().get(0).getPublishedAt());
 
-        Set<String> titles = resultRu.getArticles()
-                .stream()
-                .map(NewsResponseDTO.Article::getTitle)
-                .collect(Collectors.toSet());
-        titles.forEach(System.out::println);
-
-        System.out.println(resultRu);
+        System.out.println(resultEn);
     }
 
     @Test
     void getOtherNews() {
-        ResourcesResponseDTO.Resource resource = ResourcesResponseDTO.Resource.builder()
-                .id("lenta")
-                .name("Lenta")
-                .url("https://lenta.ru")
-                .category("general")
-                .language("ru")
-                .country("ru")
-                .build();
-
-        NewsResponseDTO resultLenta = newsapiClient.getOtherNews(resource);
-        System.out.println("The total number of results available for your request resource 'Lenta': " + resultLenta.getTotalResults());
+        NewsResource resource = newsResourceRepository.findAll().get(0);
+        NewsResponseDTO result = newsapiClient.getOtherNews(resource);
+        System.out.println("The total number of results available for your request : " + result.getTotalResults());
     }
 }

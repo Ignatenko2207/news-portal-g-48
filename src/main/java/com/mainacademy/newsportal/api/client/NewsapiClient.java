@@ -2,6 +2,7 @@ package com.mainacademy.newsportal.api.client;
 
 import com.mainacademy.newsportal.api.client.dto.NewsResponseDTO;
 import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
+import com.mainacademy.newsportal.model.NewsResource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -65,9 +66,9 @@ public class NewsapiClient {
         throw new RuntimeException("Top news were not extracted!");
     }
 
-    public NewsResponseDTO getOtherNews(ResourcesResponseDTO.Resource resource) {
+    public NewsResponseDTO getOtherNews(NewsResource resources) {
         UriBuilder uriBuilder = getUriBuilder("/v2/everything");
-        uriBuilder.queryParam("sources", resource.getId());
+        uriBuilder.queryParam("sources", resources.getApiId());
         uriBuilder.queryParam("sortBy", "publishedAt");
         NewsResponseDTO result = newsapiRestTemplate.getForEntity(uriBuilder.build(), NewsResponseDTO.class).getBody();
         if (nonNull(result) && result.getStatus().equals("ok")) {

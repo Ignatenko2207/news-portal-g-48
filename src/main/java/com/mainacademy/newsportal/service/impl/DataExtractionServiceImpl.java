@@ -4,8 +4,6 @@ import com.mainacademy.newsportal.api.client.NewsapiClient;
 import com.mainacademy.newsportal.api.client.dto.NewsResponseDTO;
 import com.mainacademy.newsportal.api.client.dto.ResourcesResponseDTO;
 import com.mainacademy.newsportal.api.client.mapper.ResourceMapper;
-import com.mainacademy.newsportal.common.Language;
-import com.mainacademy.newsportal.common.NewsCategory;
 import com.mainacademy.newsportal.model.NewsContent;
 import com.mainacademy.newsportal.model.NewsResource;
 import com.mainacademy.newsportal.service.DataExtractionService;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -33,8 +32,9 @@ public class DataExtractionServiceImpl implements DataExtractionService {
     }
 
     @Override
-    public List<NewsContent> extractOtherNews(ResourcesResponseDTO.Resource resource) {
-        List<NewsResponseDTO.Article> otherArticles = newsapiClient.getOtherNews(resource).getArticles();
+    public List<NewsContent> extractOtherNews(List<NewsResource> resources) {
+        List<NewsResponseDTO.Article> otherArticles = newsapiClient.getOtherNews(resources.get(0)).getArticles();
+
         return convertNewsToModel(otherArticles);
     }
 
@@ -57,17 +57,16 @@ public class DataExtractionServiceImpl implements DataExtractionService {
                 .map(article -> {
                     NewsResource resource = resourcesMap.get(article.getSource().getId());
                     return NewsContent.builder()
-                            .resource(resource) //TODO: fix error
+                            .resource(resource)
                             .author(article.getAuthor())
                             .title(article.getTitle())
                             .description(article.getDescription())
                             .newsUrl(article.getUrl())
                             .imageUrl(article.getUrlToImage())
                             .publishedTime(article.getPublishedAt())
-//                            .language(resource.getLanguage()) //TODO: fix error
-                            .language(Language.EN)
+                            .language(resource.getLanguage())
                             .content(article.getContent())
-                            .category(NewsCategory.TOP) // check
+                            .category(resource.getCategory())
                             .build();
                 })
                 .collect(Collectors.toList());

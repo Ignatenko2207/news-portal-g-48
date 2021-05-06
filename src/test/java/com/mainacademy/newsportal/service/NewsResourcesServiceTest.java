@@ -26,6 +26,6 @@ class NewsResourcesServiceTest {
     @Test
     void save() {
         List<NewsResource> resources = dataExtractionService.extractResources();
-        newsResourcesService.save(resources.get(0)); //before delete first resource in database
+        newsResourcesService.save(resources.get(0));
     }
 }

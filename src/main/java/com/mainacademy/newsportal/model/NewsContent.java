@@ -22,7 +22,7 @@ public class NewsContent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(targetEntity = NewsResource.class)
+    @ManyToOne(targetEntity = NewsResource.class, cascade = CascadeType.ALL)
     private NewsResource resource;
     private String author;
     private String title;
