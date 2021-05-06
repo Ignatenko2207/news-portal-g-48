@@ -44,4 +44,9 @@ public class NewsResourcesServiceImpl implements NewsResourcesService {
         }
     }
 
+    @Override
+    public List<NewsResource> findAll() {
+        return newsResourceRepository.findAll();
+    }
+
 }

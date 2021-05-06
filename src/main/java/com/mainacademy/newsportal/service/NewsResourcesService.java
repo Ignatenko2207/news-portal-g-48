@@ -8,5 +8,6 @@ public interface NewsResourcesService {
 
     void saveAll(List<NewsResource> resources);
     void save(NewsResource resource);
+    List<NewsResource> findAll();
 
 }
