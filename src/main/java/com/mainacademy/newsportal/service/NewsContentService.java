@@ -13,5 +13,5 @@ public interface NewsContentService {
     Page<NewsContent> findByCategory(String category, Integer page, Integer size);
     Page<NewsContent> findByText(String fragment, Integer page, Integer size);
     void deleteContentBefore(LocalDateTime time);
-
+    NewsContent findById(Integer id);
 }

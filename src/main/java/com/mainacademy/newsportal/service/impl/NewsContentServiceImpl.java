@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NewsContentServiceImpl implements NewsContentService {
 
+    private static final Sort DEFAULT_SORT = Sort.by("published_time").descending();
     private final NewsContentRepository newsContentRepository;
 
     @Override
@@ -51,19 +53,24 @@ public class NewsContentServiceImpl implements NewsContentService {
 
     @Override
     public Page<NewsContent> findByCategory(String category, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, DEFAULT_SORT);
         return newsContentRepository.findAllByCategory(NewsCategory.ofName(category), pageable);
     }
 
     @Override
     public Page<NewsContent> findByText(String fragment, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, DEFAULT_SORT);
         return newsContentRepository.findAllByContentContains(fragment, pageable);
     }
 
     @Override
     public void deleteContentBefore(LocalDateTime time) {
         newsContentRepository.deleteAllByPublishedTimeBefore(time);
+    }
+
+    @Override
+    public NewsContent findById(Integer id) {
+        return newsContentRepository.findById(id).orElse(null);
     }
 
 }
